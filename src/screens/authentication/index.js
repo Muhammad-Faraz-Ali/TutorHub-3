@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   StatusBar,
   TouchableOpacity,
+  TouchableHighlight,
   Text,
   View,
   StyleSheet,
@@ -15,21 +16,62 @@ import {
 } from 'react-native-responsive-screen';
 
 const Main = ({navigation}) => {
+  const [state, setState] = useState({
+    loginBtnColor: '',
+    signupBtnColor: '',
+    guestBtnColor: '',
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.btnsContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <View style={styles.btn}>
+        <TouchableOpacity
+          style={[styles.btn, {backgroundColor: state.loginBtnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+          onPress={() => {
+            setState({loginBtnColor: '#42EADDFF'});
+            setTimeout(() => {
+              navigation.navigate('Login');
+              setState({
+                //signupBtnColor: '#D5DBDB',
+                //guestBtnColor: '#D5DBDB',
+              });
+            }, 100);
+          }}>
+          <View>
             <Text style={styles.btnText}>Login</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-          <View style={styles.btn}>
+        <TouchableOpacity
+          style={[styles.btn, {backgroundColor: state.signupBtnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+          onPress={() => {
+            setState({signupBtnColor: '#42EADDFF'});
+            setTimeout(() => {
+              navigation.navigate('Signup');
+              setState({
+                // loginBtnColor: '#D5DBDB',
+                //signupBtnColor: '#D5DBDB',
+                //guestBtnColor: '#D5DBDB',
+              });
+            }, 100);
+          }}>
+          <View>
             <Text style={styles.btnText}>Sign Up</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("GuestSearch")}>
-          <View style={styles.btn}>
+        <TouchableOpacity
+          style={[styles.btn, {backgroundColor: state.guestBtnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+          onPress={() => {
+            setState({guestBtnColor: '#42EADDFF'});
+            setTimeout(() => {
+              navigation.navigate('GuestSearch');
+              setState({
+                //loginBtnColor: '#D5DBDB',
+                //signupBtnColor: '#D5DBDB',
+                //guestBtnColor: '#D5DBDB',
+              });
+            }, 100);
+          }}>
+          <View>
             <Text style={styles.btnText}>Guest</Text>
           </View>
         </TouchableOpacity>
@@ -40,7 +82,7 @@ const Main = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#800000',
+    backgroundColor: '#008080',
   },
   btnsContainer: {
     flexDirection: 'column', //By default
@@ -55,16 +97,9 @@ const styles = StyleSheet.create({
     //borderTopRightRadius: hp('100%'),
     //overflow: 'hidden',
   },
-  btn: {
-    backgroundColor: 'white',
-    borderRadius: hp('3%'),
-    borderWidth: 3, //Width of the border
-    borderColor: '#800000',
-    padding: 15,
-    elevation: 30,
-  },
+
   btnText: {
-    color: '#800000',
+    color: '#008080',
     fontSize: 16,
     fontWeight: 'bold',
     //justifyContent:"center",
@@ -72,6 +107,18 @@ const styles = StyleSheet.create({
     //OR
     textAlign: 'center',
     textTransform: 'uppercase',
+  },
+  btn: {
+    height: 60,
+    width: 160,
+    borderWidth: 2,
+    //backgroundColor: '',
+    borderRadius: 30,
+    borderColor: '#42EADDFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textTransform: 'uppercase',
+    //elevation: 30,
   },
 });
 export default Main;
