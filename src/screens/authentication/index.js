@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   btnText: {
     color: '#008080',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: 'normal',
     //justifyContent:"center",
     //alignItems:"center",
     //OR
