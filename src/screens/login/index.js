@@ -12,12 +12,20 @@ import {
 } from 'react-native';
 
 import OutlineInput from 'react-native-outline-input';
+import {heightPercentageToDP} from 'react-native-responsive-screen';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
+  const [state, setState] = useState({
+    btnColor: '#D5DBDB',
+  });
 
   return (
     <View style={styles.container}>
@@ -28,12 +36,12 @@ const Login = ({navigation}) => {
             value={email}
             onChangeText={e => setEmail(e)}
             label="Email"
-            activeValueColor="#800000"
-            activeBorderColor="#800000"
-            activeLabelColor="#800000"
-            passiveBorderColor="#F18E0F"
+            activeValueColor="#42EADDFF"
+            activeBorderColor="#42EADDFF"
+            activeLabelColor="#42EADDFF"
+            passiveBorderColor="#B2BABB"
             passiveLabelColor="#B2BABB"
-            passiveValueColor="#F18E0F"
+            passiveValueColor="#B2BABB"
           />
         </View>
         <View
@@ -48,12 +56,12 @@ const Login = ({navigation}) => {
             value={password}
             onChangeText={e => setPassword(e)}
             label="Password"
-            activeValueColor="#800000"
-            activeBorderColor="#800000"
-            activeLabelColor="#800000"
-            passiveBorderColor="#F18E0F"
+            activeValueColor="#42EADDFF"
+            activeBorderColor="#42EADDFF"
+            activeLabelColor="#42EADDFF"
+            passiveBorderColor="#B2BABB"
             passiveLabelColor="#B2BABB"
-            passiveValueColor="#F18E0F"
+            passiveValueColor="#B2BABB"
             width="80%"
           />
           <TouchableOpacity
@@ -66,30 +74,51 @@ const Login = ({navigation}) => {
               paddingHorizontal="12%"
             />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={{marginLeft: wp('50%'), marginTop: hp('-2%')}}>
+            <Text style={{color: 'red'}}>Forgot password?</Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity onPress={() => navigation.navigate("Main")}>
-          <View style={styles.btn}>
-            <Text style={styles.btnText}>Login</Text>
-          </View>
-        </TouchableOpacity>
-        <Text style={{color: '#F18E0F', marginHorizontal: 50, marginTop: 10}}>
+        <View style={{marginTop: hp('2%')}}>
+          <TouchableOpacity
+            style={[styles.btn, {backgroundColor: state.btnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+            onPress={() => {
+              setState({btnColor: '#42EADDFF'});
+              setTimeout(() => {
+                navigation.navigate('Main');
+                setState({
+                  btnColor: '#D5DBDB',
+                  //googleBtnColor: '#D5DBDB',
+                });
+              }, 100);
+            }}>
+            <View>
+              <Text style={styles.btnText}>Login</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <Text style={{color: '#42EADDFF', marginHorizontal: 50, marginTop: 10}}>
           ------------------------------OR------------------------------
         </Text>
 
         <View style={[styles.btn, {marginVertical: 20}]}>
           <FontAwesome.Button
             name="google"
-            backgroundColor="#800000"
+            backgroundColor="#58D68D"
+            //#64495ED
+            //#58D68D
+            //#F39C12
             paddingHorizontal="20%"
-            onPress={() => navigation.navigate("Main")}>
-            <Text style={[styles.btnText, {padding: 2}]}>Login with Google</Text>
+            onPress={() => navigation.navigate('Main')}>
+            <Text style={[styles.btnText, {padding: 2}]}>
+              Login with Google
+            </Text>
           </FontAwesome.Button>
         </View>
 
         <View style={styles.signupCont}>
           <Text style={styles.signupText}>Don't have an account yet?</Text>
-          <TouchableOpacity onPress={() => Alert.alert("I'm Sign Up Button")}>
+          <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
             <Text style={styles.btnSignup}>Sign Up</Text>
           </TouchableOpacity>
         </View>
@@ -111,7 +140,7 @@ const styles = StyleSheet.create({
     width: 0,
 
     borderTopWidth: 180,
-    borderTopColor: '#800000',
+    borderTopColor: '#008080',
     borderStyle: 'solid',
 
     borderLeftWidth: 300,
@@ -130,7 +159,7 @@ const styles = StyleSheet.create({
   },
   textBox: {
     //width: 320,
-    backgroundColor: '#B2BABB',
+    backgroundColor: '#008080',
     marginVertical: 10,
     marginHorizontal: 20,
 
@@ -149,7 +178,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 20,
     borderRadius: 25,
-    backgroundColor: '#800000',
+    // backgroundColor: '#D5DBDB',
   },
   btnText: {
     fontSize: 16,
@@ -161,18 +190,18 @@ const styles = StyleSheet.create({
   },
   signupCont: {
     //marginHorizontal: 70,
-    marginVertical: 100,
+    marginVertical: hp('12%'),
     flexGrow: 1,
     flexDirection: 'row',
     //alignItems: 'flex-end',
     justifyContent: 'center',
   },
   signupText: {
-    color: '#F18E0F',
+    color: '#42EADDFF',
     fontSize: 16,
   },
   btnSignup: {
-    color: '#800000',
+    color: '#008080',
     fontSize: 16,
     fontWeight: 'bold',
     //textTransform: 'uppercase',

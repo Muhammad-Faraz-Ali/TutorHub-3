@@ -23,6 +23,9 @@ const Signup = ({navigation}) => {
   const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [state, setState] = useState({
+    btnColor: '#D5DBDB',
+  });
 
   return (
     <View style={styles.container}>
@@ -33,12 +36,12 @@ const Signup = ({navigation}) => {
             value={email}
             onChangeText={e => setEmail(e)}
             label="Email"
-            activeValueColor="#800000"
-            activeBorderColor="#800000"
-            activeLabelColor="#800000"
-            passiveBorderColor="#F18E0F"
+            activeValueColor="#42EADDFF"
+            activeBorderColor="#42EADDFF"
+            activeLabelColor="#42EADDFF"
+            passiveBorderColor="#B2BABB"
             passiveLabelColor="#B2BABB"
-            passiveValueColor="#F18E0F"
+            passiveValueColor="#B2BABB"
           />
         </View>
         <View style={[styles.textInput, {marginTop: 10}]}>
@@ -47,12 +50,12 @@ const Signup = ({navigation}) => {
             value={password}
             onChangeText={e => setPassword(e)}
             label="Password"
-            activeValueColor="#800000"
-            activeBorderColor="#800000"
-            activeLabelColor="#800000"
-            passiveBorderColor="#F18E0F"
+            activeValueColor="#42EADDFF"
+            activeBorderColor="#42EADDFF"
+            activeLabelColor="#42EADDFF"
+            passiveBorderColor="#B2BABB"
             passiveLabelColor="#B2BABB"
-            passiveValueColor="#F18E0F"
+            passiveValueColor="#B2BABB"
           />
           <TouchableOpacity
             style={{bottom: 40, left: 270}}
@@ -66,21 +69,34 @@ const Signup = ({navigation}) => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate("Main")}>
-          <View style={styles.btn}>
-            <Text style={styles.btnText}>Sign up</Text>
-          </View>
-        </TouchableOpacity>
-        <Text style={{color: '#F18E0F', marginHorizontal: 50, marginTop: 10}}>
+        <View>
+          <TouchableOpacity
+            style={[styles.btn, {backgroundColor: state.btnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+            onPress={() => {
+              setState({btnColor: '#42EADDFF'});
+              setTimeout(() => {
+                navigation.navigate('Main');
+                setState({
+                  btnColor: '#D5DBDB',
+                  //googleBtnColor: '#D5DBDB',
+                });
+              }, 100);
+            }}>
+            <View>
+              <Text style={styles.btnText}>Sign up</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <Text style={{color: '#42EADDFF', marginHorizontal: 50, marginTop: 10}}>
           ------------------------------OR------------------------------
         </Text>
 
         <View style={[styles.btn, {marginVertical: 20}]}>
           <FontAwesome.Button
             name="google"
-            backgroundColor="#800000"
+            backgroundColor="#58D68D"
             paddingHorizontal="20%"
-            onPress={() => navigation.navigate("Main")}>
+            onPress={() => navigation.navigate('Main')}>
             <Text style={[styles.btnText, {padding: 2}]}>
               Signup with Google
             </Text>
@@ -89,7 +105,7 @@ const Signup = ({navigation}) => {
 
         <View style={styles.signinCont}>
           <Text style={styles.signinText}>Already have an account?</Text>
-          <TouchableOpacity onPress={() => Alert.alert("I'm Login Button")}>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
             <Text style={styles.btnSignin}>Login</Text>
           </TouchableOpacity>
         </View>
@@ -112,7 +128,7 @@ const styles = StyleSheet.create({
     width: 0,
 
     borderTopWidth: 180,
-    borderTopColor: '#800000',
+    borderTopColor: '#008080',
     borderStyle: 'solid',
 
     borderRightWidth: 300,
@@ -150,7 +166,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 20,
     borderRadius: 25,
-    backgroundColor: '#800000',
+    //backgroundColor: '#800000',
   },
   btnText: {
     fontSize: 16,
@@ -162,18 +178,18 @@ const styles = StyleSheet.create({
   },
   signinCont: {
     //marginHorizontal: 70,
-    marginVertical: 100,
+    marginVertical: hp('15%'),
     flexGrow: 1,
     flexDirection: 'row',
     //alignItems: 'flex-end',
     justifyContent: 'center',
   },
   signinText: {
-    color: '#F18E0F',
+    color: '#42EADDFF',
     fontSize: 16,
   },
   btnSignin: {
-    color: '#800000',
+    color: 'teal',
     fontSize: 16,
     fontWeight: 'bold',
     //textTransform: 'uppercase',
