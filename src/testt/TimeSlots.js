@@ -45,11 +45,8 @@ const TimeSlots = () => {
           mode="time"
           open={open}
           minuteInterval={15}
-          //locale="en_GB"
-          //is24hourSource="device"
           title="Select Ending Time"
           date={endTime}
-          //locale={'device'}
           onConfirm={time => {
             setOpen(false);
             setEndTime(time);
@@ -63,8 +60,6 @@ const TimeSlots = () => {
           modal
           mode="time"
           open={open}
-          //locale="en_GB"
-          //is24hourSource="device"
           minuteInterval={15}
           //textColor="red"
           title="Select Starting Time"
