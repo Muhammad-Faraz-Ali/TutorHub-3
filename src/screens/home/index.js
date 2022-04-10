@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -8,6 +8,9 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   ScrollView,
+  SafeAreaView,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
@@ -16,9 +19,121 @@ import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import UserAvatar from 'react-native-user-avatar';
 import {Card} from 'react-native-shadow-cards';
 
+// Import Image Picker
+// import ImagePicker from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+
 const index = ({navigation}) => {
   const Height = Dimensions.get('screen').height;
   const Width = Dimensions.get('screen').width;
+  const [filePath, setFilePath] = useState({
+    assets: [
+      {
+        uri: '../../res/images/no-image.jpeg',
+      },
+    ],
+  });
+
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Camera Permission',
+            message: 'App needs camera permission',
+          },
+        );
+        // If CAMERA Permission is granted
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    } else return true;
+  };
+
+  const requestExternalWritePermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'External Storage Write Permission',
+            message: 'App needs write permission',
+          },
+        );
+        // If WRITE_EXTERNAL_STORAGE Permission is granted
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        alert('Write permission err', err);
+      }
+      return false;
+    } else return true;
+  };
+
+  const captureImage = async type => {
+    let options = {
+      mediaType: type,
+      maxWidth: 300,
+      maxHeight: 550,
+      quality: 1,
+      // videoQuality: 'low',
+      //durationLimit: 30, //Video max duration in seconds
+      saveToPhotos: true,
+    };
+    let isCameraPermitted = await requestCameraPermission();
+    let isStoragePermitted = await requestExternalWritePermission();
+    if (isCameraPermitted && isStoragePermitted) {
+      launchCamera(options, response => {
+        //console.log('Response = ', response);
+
+        if (response.didCancel) {
+          alert('User cancelled camera picker');
+          return;
+        } else if (response.errorCode == 'camera_unavailable') {
+          alert('Camera not available on device');
+          return;
+        } else if (response.errorCode == 'permission') {
+          alert('Permission not satisfied');
+          return;
+        } else if (response.errorCode == 'others') {
+          alert(response.errorMessage);
+          return;
+        }
+        setFilePath(response);
+      });
+    }
+  };
+
+  const chooseFile = type => {
+    let options = {
+      mediaType: type,
+      maxWidth: 300,
+      maxHeight: 550,
+      quality: 1,
+    };
+    launchImageLibrary(options, response => {
+      // console.log('Response = ', response);
+
+      if (response.didCancel) {
+        alert('User cancelled camera picker');
+        return;
+      } else if (response.errorCode == 'camera_unavailable') {
+        alert('Camera not available on device');
+        return;
+      } else if (response.errorCode == 'permission') {
+        alert('Permission not satisfied');
+        return;
+      } else if (response.errorCode == 'others') {
+        alert(response.errorMessage);
+        return;
+      }
+      //console.log(response.assets[0].uri);
+      setFilePath(response);
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -43,7 +158,7 @@ const index = ({navigation}) => {
                   fontWeight: 'bold',
                   padding: 3,
                   marginBottom: 4,
-                  backgroundColor: '#42EADDFF',
+                  backgroundColor: 'red',
                   borderRadius: 8,
                   height: '40%',
                   left: 20,
@@ -54,7 +169,7 @@ const index = ({navigation}) => {
               <Ionicons
                 style={{marginRight: 0}}
                 size={40}
-                color="teal"
+                color="#42EADDFF"
                 name="notifications-outline"
               />
             </TouchableOpacity>
@@ -67,13 +182,13 @@ const index = ({navigation}) => {
                 borderRadius: 50,
                 height: 100,
                 width: 100,
-                backgroundColor: '#42EADDFF',
+                backgroundColor: 'white',
                 elevation: 16,
               }}>
               <TouchableOpacity>
                 <Image
                   borderRadius={50}
-                  source={require('../../res/images/me.png')}
+                  source={{uri: filePath.assets[0].uri}}
                   style={{height: 100, width: 100}}
                 />
               </TouchableOpacity>
@@ -89,9 +204,7 @@ const index = ({navigation}) => {
               size={30}
               color="#42EADDFF"
               name="camera"
-              onPress={() => {
-                alert('Camera clicked');
-              }}
+              onPress={() => chooseFile('photo')}
             />
           </View>
 

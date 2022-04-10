@@ -98,11 +98,21 @@ const index = ({navigation}) => {
     <View>
       <ScrollView>
         <View style={styles.section}>
+          <Text
+            style={{
+              backgroundColor: '#3498DB',
+              color: 'white',
+              textAlign: 'center',
+              marginBottom: '3%',
+              padding: '2%',
+            }}>
+            Guest Mode
+          </Text>
           <Card style={styles.cardStyle} elevation={50} cornerRadius={20}>
             <Text
               style={{
                 alignSelf: 'center',
-                color: 'sienna',
+                color: 'teal',
                 fontSize: 18,
                 marginBottom: 5,
               }}>
@@ -135,7 +145,7 @@ const index = ({navigation}) => {
             <Text
               style={{
                 alignSelf: 'center',
-                color: 'sienna',
+                color: 'teal',
                 fontSize: 18,
                 marginBottom: 5,
               }}>
@@ -182,7 +192,7 @@ const index = ({navigation}) => {
             <Text
               style={{
                 alignSelf: 'center',
-                color: 'sienna',
+                color: 'teal',
                 fontSize: 18,
                 marginBottom: 5,
               }}>
@@ -246,7 +256,7 @@ const index = ({navigation}) => {
             borderWidth: 5,
             borderColor: 'white',
             color: 'white',
-            backgroundColor: 'darkseagreen',
+            backgroundColor: 'teal',
             textAlign: 'center',
             textAlignVertical: 'center',
             padding: 10,
@@ -271,7 +281,13 @@ const index = ({navigation}) => {
           <Text
             style={[
               styles.selectedUser,
-              {alignSelf: 'center', padding: 20, paddingHorizontal: 30},
+              {
+                alignSelf: 'center',
+                padding: 10,
+                paddingHorizontal: '40%',
+                borderColor: '#58D68D',
+                backgroundColor: '#58D68D',
+              },
             ]}>
             Search
           </Text>
@@ -293,28 +309,29 @@ const styles = StyleSheet.create({
   normalUser: {
     borderRadius: 20,
     borderWidth: 3,
-    borderColor: 'goldenrod',
+    borderColor: '#42EADDFF',
     textAlign: 'center',
     textAlignVertical: 'center',
     padding: 10,
-    color: 'black',
+    color: 'teal',
     marginBottom: 5,
   },
   selectedUser: {
-    borderRadius: 20,
+    borderRadius: 50,
     borderWidth: 3,
-    borderColor: 'goldenrod',
+    borderColor: '#42EADDFF',
     fontWeight: 'bold',
     textAlign: 'center',
     textAlignVertical: 'center',
     padding: 10,
     color: 'white',
-    backgroundColor: 'maroon',
+    backgroundColor: '#42EADDFF',
     marginBottom: 5,
   },
   cardStyle: {
     padding: 25,
     alignSelf: 'center',
+    //backgroundColor: '#3498DB',
   },
   section: {
     marginBottom: 10,
