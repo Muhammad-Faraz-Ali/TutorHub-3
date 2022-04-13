@@ -1,5 +1,5 @@
 import React from 'react';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {
   StatusBar,
   TouchableOpacity,
@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
   StyleSheet,
+  ScrollView,
   Button,
   Alert,
 } from 'react-native';
@@ -18,99 +19,352 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import OutlineInput from 'react-native-outline-input';
-
+import AwesomeAlert from 'react-native-awesome-alerts';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import * as RNFS from 'react-native-fs';
+//const fileHandler = require('fs');
+GoogleSignin.configure({
+  webClientId:
+    '1060621772973-7t2feq1j454br2ve5r0qs92k7dl2i7mb.apps.googleusercontent.com',
+  androidClientId:
+    '1060621772973 - t5rkri716lh4r73a5t1cu2etribekpl6.apps.googleusercontent.com',
+});
 const Signup = ({navigation}) => {
+  //all states are defined here
   const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [state, setState] = useState({
-    btnColor: '#D5DBDB',
-  });
+  const [signUpBtnColor, setSignupBtnColor] = useState('#D5DBDB');
+  //----------these states are related to alertDialog----------//
+  const [alertText, setAlertText] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [moveToLoginPage, setMoveToLoginPage] = useState(false);
+  //----------------------------------------------------------//
+  //const [value, setValue] = useState(null);
+  //all hooks are defined here
+  useEffect(() => {}, []);
+  //all helper functions are defined here
+
+  async function onGoogleButtonPress() {
+    // Get the users ID token
+    const googleAccountDetails = await GoogleSignin.signIn();
+
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(
+      googleAccountDetails.idToken,
+    );
+    const status = auth().isSignInWithEmailLink(googleAccountDetails.email); //checking either someone already registered with this email
+    if (status == false) {
+      //means previously no one is registered with this account
+      // Sign-in the user with the credential
+      try {
+        const user = await auth().signInWithCredential(googleCredential);
+        //promise resolved succesfully
+        console.log('Signed in with Google!', user);
+        //before navigation to Main Page store this user in txtfile as new user
+        addUserToLocalStorage(auth().currentUser.uid);
+        navigation.navigate('Main');
+      } catch (error) {
+        //promise rejected
+        setAlertText(error.message);
+        setShowAlert(true);
+      }
+    } else {
+      setAlertText(
+        `Someone is already registered with this email ${googleAccountDetails.email}, you should try to register with another email.`,
+      );
+      setShowAlert(true);
+      GoogleSignin.signOut(); //it will allow user to select another google account, otherwise previous account will be selected by default
+    }
+  }
+  // async function onGoogleButtonPress() {
+  //   // Get the users ID token
+  //   const {idToken} = await GoogleSignin.signIn();
+
+  //   // Create a Google credential with the token
+  //   const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+  //   // Sign-in the user with the credential
+  //   try {
+  //     const user = await auth().signInWithCredential(googleCredential);
+  //     //promise resolved succesfully
+  //     console.log('Signed in with Google!', user);
+  //     if (user.additionalUserInfo.isNewUser == false) {
+  //       //it means this user is not new to our app
+  //       setAlertText(
+  //         `Someone is already registered with this email ${user.additionalUserInfo.profile.email}, you should try to register with another email.`,
+  //       );
+  //       setShowAlert(true);
+  //     } else {
+  //       //user is newly registered lets navigate it Main Page
+  //       firestore() //error of this query will also catched by catch statement
+  //         .collection('first_visit')
+  //         .add({id: user.uid, status: true})
+  //         .catch(error =>
+  //           console.log('Error arise while setting first visit flag: ', error),
+  //         );
+  //       navigation.navigate('Main');
+  //     }
+  //   } catch (error) {
+  //     //promise rejected
+  //     setAlertText(error.message);
+  //     setShowAlert(true);
+  //   }
+  // }
+
+  const addUserToLocalStorage = userId => {
+    // fileHandler.readFile('../../res/local_storage', (err, data) => {
+    //   if (err) console.log('Error arise while writing user to local DB', err);
+    //   storage = JSON.parse(data.toString());
+    //   storage.userId = true;
+    //   fileHandler.writeFile(
+    //     '../res/local_storage',
+    //     Json.toString(storage),
+    //     () => {
+    //       console.log('User has been written in DB', uid);
+    //     },
+    //   );
+    // });
+    RNFS.readFile('../../res/local_storage')
+      .then(data => {
+        var storage = JSON.parse(data.toString());
+        const id = userId;
+        storage.id = true;
+        RNFS.writeFile('../../res/local_storage', JSON.toString(storage)).then(
+          () => console.log('USER ADDED TO LOCAL DB SUCCESSFULLY'),
+        );
+      })
+      .catch(error =>
+        console.log(
+          'Error comes while setting user data in local_storage:',
+          error,
+        ),
+      );
+  };
+  const createUser = async () => {
+    //
+    if (
+      email == null ||
+      password == null ||
+      email.length == 0 ||
+      password.length == 0
+    ) {
+      setAlertText('Empty fields are not allowed!');
+      setShowAlert(true);
+      return;
+    }
+    try {
+      const res = await auth().createUserWithEmailAndPassword(email, password);
+      console.log('User account created & signed in!', res);
+
+      auth()
+        .currentUser.sendEmailVerification()
+        .then(
+          () => {
+            console.log(
+              'We have sent you email on provided email address, go and check it out',
+            );
+            setAlertText(
+              'Verification link is sent to your provided email address, open it and complete your verification step. Then go to SignIn Page and Login with your credentials',
+            );
+            //enabling Move to login Page button on alert dialog
+            setMoveToLoginPage(true); //verification mail is sent, so navigate user to the login page
+          },
+          error => setAlertText(error.message),
+        );
+
+      setShowAlert(true);
+      addUserToLocalStorage(auth().currentUser.uid);
+      // firestore() //error of this query will also catched by catch statement
+      //   .collection('first_visit')
+      //   .add({id: auth().currentUser.uid, status: true})
+      //   .catch(error =>
+      //     console.log('Error arise while setting first visit flag: ', error),
+      //   );
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        console.log('That email address is already in use!');
+      } else if (error.code === 'auth/invalid-email') {
+        console.log('That email address is invalid!');
+      } else console.error(error);
+      console.log('Code', error.code);
+      console.log('msg: ', error.message);
+      setAlertText(error.message);
+      setShowAlert(true);
+    }
+
+    // try {
+    //   let token = await auth().currentUser.getIdToken(true);
+    //   console.log('user id token: ', token);
+    // } catch (error) {
+    //   console.log('error while taking token: ', err);
+    // }
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.triangleContainer}></View>
-      <View style={styles.formContainer}>
-        <View style={styles.textInput}>
-          <OutlineInput
-            value={email}
-            onChangeText={e => setEmail(e)}
-            label="Email"
-            activeValueColor="#42EADDFF"
-            activeBorderColor="#42EADDFF"
-            activeLabelColor="#42EADDFF"
-            passiveBorderColor="#B2BABB"
-            passiveLabelColor="#B2BABB"
-            passiveValueColor="#B2BABB"
-          />
-        </View>
-        <View style={[styles.textInput, {marginTop: 10}]}>
-          <OutlineInput
-            secureTextEntry={isSecureTextEntry ? true : false}
-            value={password}
-            onChangeText={e => setPassword(e)}
-            label="Password"
-            activeValueColor="#42EADDFF"
-            activeBorderColor="#42EADDFF"
-            activeLabelColor="#42EADDFF"
-            passiveBorderColor="#B2BABB"
-            passiveLabelColor="#B2BABB"
-            passiveValueColor="#B2BABB"
-          />
-          <TouchableOpacity
-            style={{bottom: 40, left: 270}}
-            onPress={() => setIsSecureTextEntry(!isSecureTextEntry)}>
-            <FontAwesome
-              name={isSecureTextEntry ? 'eye-slash' : 'eye'}
-              color="gray"
-              size={25}
-              paddingHorizontal="12%"
-            />
-          </TouchableOpacity>
-        </View>
-
-        <View>
-          <TouchableOpacity
-            style={[styles.btn, {backgroundColor: state.btnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+    <>
+      <View style={styles.container}>
+        <View style={styles.triangleContainer}></View>
+        <ScrollView>
+          <Button
+            title="SignOut"
             onPress={() => {
-              setState({btnColor: '#42EADDFF'});
-              setTimeout(() => {
-                navigation.navigate('Main');
-                setState({
-                  btnColor: '#D5DBDB',
-                  //googleBtnColor: '#D5DBDB',
-                });
-              }, 100);
-            }}>
-            <View>
-              <Text style={styles.btnText}>Sign up</Text>
+              const signout = async () => {
+                //this code is working perfectly
+                console.log('current user: ', auth().currentUser);
+                await auth().signOut(); //it will remove current user present in auth, either that user was logged in through Google or Email/Password
+                console.log('Current User Status: ', auth().currentUser);
+                await GoogleSignin.signOut(); //If we will not signOut from there then next time, it will automatically select already selected user and will not give pop-up
+                console.log('Signout from google also now agian login');
+              };
+              signout();
+              // GoogleSignin.signOut().then(
+              //   console.log('user signed out: ', auth().currentUser),
+              // );
+            }}></Button>
+          <View style={styles.formContainer}>
+            {/* <Text>{value}</Text> */}
+            <View style={styles.textInput}>
+              <OutlineInput
+                value={email}
+                onChangeText={e => setEmail(e)}
+                label="Email"
+                activeValueColor="#42EADDFF"
+                activeBorderColor="#42EADDFF"
+                activeLabelColor="#42EADDFF"
+                passiveBorderColor="#B2BABB"
+                passiveLabelColor="#B2BABB"
+                passiveValueColor="#B2BABB"
+              />
             </View>
-          </TouchableOpacity>
-        </View>
-        <Text style={{color: '#42EADDFF', marginHorizontal: 50, marginTop: 10}}>
-          ------------------------------OR------------------------------
-        </Text>
+            <View style={[styles.textInput, {marginTop: 10}]}>
+              <OutlineInput
+                secureTextEntry={isSecureTextEntry ? true : false}
+                value={password}
+                onChangeText={e => setPassword(e)}
+                label="Password"
+                activeValueColor="#42EADDFF"
+                activeBorderColor="#42EADDFF"
+                activeLabelColor="#42EADDFF"
+                passiveBorderColor="#B2BABB"
+                passiveLabelColor="#B2BABB"
+                passiveValueColor="#B2BABB"
+              />
+              <TouchableOpacity
+                style={{bottom: 40, left: 270}}
+                onPress={() => setIsSecureTextEntry(!isSecureTextEntry)}>
+                <FontAwesome
+                  name={isSecureTextEntry ? 'eye-slash' : 'eye'}
+                  color="gray"
+                  size={25}
+                  paddingHorizontal="12%"
+                />
+              </TouchableOpacity>
+            </View>
+            {password?.length > 0 && password?.length < 6 ? (
+              <Text style={[styles.textInput, {color: 'red'}]}>
+                Password should have atleast 6 characters
+              </Text>
+            ) : null}
+            <View>
+              <TouchableOpacity
+                style={[
+                  styles.btn,
+                  {
+                    backgroundColor:
+                      password.length > 5 &&
+                      email.length > 0 &&
+                      email.includes('@') &&
+                      email.includes('.')
+                        ? '#42EADDFF'
+                        : 'lightgray',
+                  },
+                ]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+                onPress={() => {
+                  //setState({btnColor: '#42EADDFF'});
+                  // setTimeout(() => {
+                  //   navigation.navigate('Main');
+                  //   setState({
+                  //     btnColor: '#D5DBDB',
+                  //     //googleBtnColor: '#D5DBDB',
+                  //   });
+                  // }, 100);
 
-        <View style={[styles.btn, {marginVertical: 20}]}>
-          <FontAwesome.Button
-            name="google"
-            backgroundColor="#58D68D"
-            paddingHorizontal="20%"
-            onPress={() => navigation.navigate('Main')}>
-            <Text style={[styles.btnText, {padding: 2}]}>
-              Signup with Google
+                  console.log('function triggered');
+
+                  createUser();
+
+                  //token => console.log('user id token: ', token),
+                  //err =>
+                }}>
+                <View>
+                  <Text style={styles.btnText}>Sign up</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <Text
+              style={{color: '#42EADDFF', marginHorizontal: 50, marginTop: 10}}>
+              ------------------------------OR------------------------------
             </Text>
-          </FontAwesome.Button>
-        </View>
 
-        <View style={styles.signinCont}>
-          <Text style={styles.signinText}>Already have an account?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.btnSignin}>Login</Text>
-          </TouchableOpacity>
-        </View>
+            <View style={[styles.btn, {marginVertical: 20}]}>
+              <FontAwesome.Button
+                name="google"
+                backgroundColor="#58D68D"
+                paddingHorizontal="20%"
+                onPress={() => onGoogleButtonPress()}>
+                <Text style={[styles.btnText, {padding: 2}]}>
+                  Signup with Google
+                </Text>
+              </FontAwesome.Button>
+            </View>
+
+            <View style={styles.signinCont}>
+              <Text style={styles.signinText}>Already have an account?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.btnSignin}>Login</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
       </View>
-    </View>
+      <AwesomeAlert
+        show={showAlert}
+        //showProgress={false}
+        title="Alert"
+        message={alertText}
+        closeOnTouchOutside={true}
+        closeOnHardwareBackPress={false}
+        showCancelButton={moveToLoginPage} //this button will be enabled when user detials are correct and verification email has sent
+        showConfirmButton={true} //this button will always enabled
+        cancelText="Login Page"
+        confirmText="OK"
+        confirmButtonColor="#DD6B55"
+        cancelButtonColor="teal"
+        onCancelPressed={() => {
+          setMoveToLoginPage(false); //disabling it so that when user come back to screen by pressing back button then it should be false
+          setShowAlert(false);
+          navigation.navigate('Login');
+          //navigation.navigate("login");
+          // auth().currentUser.sendEmailVerification().then(
+          //   ()=>{
+          //     setAlertText("Verification Email Sent!");
+          //     setShowAlert(true);
+          //   })
+        }}
+        onConfirmPressed={() => {
+          setMoveToLoginPage(false);
+          setShowAlert(false);
+          // console.log('after closing alert');
+          // if (moveToLoginPage) {
+          //   setMoveToLoginPage(false);
+          //   console.log("inside function")
+          // }
+          // console.log("outside function");
+        }}></AwesomeAlert>
+    </>
   );
 };
 const styles = StyleSheet.create({
@@ -178,7 +432,7 @@ const styles = StyleSheet.create({
   },
   signinCont: {
     //marginHorizontal: 70,
-    marginVertical: hp('15%'),
+    marginVertical: hp('5%'),
     flexGrow: 1,
     flexDirection: 'row',
     //alignItems: 'flex-end',
@@ -190,8 +444,8 @@ const styles = StyleSheet.create({
   },
   btnSignin: {
     color: 'teal',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: 'normal',
     //textTransform: 'uppercase',
   },
 });
