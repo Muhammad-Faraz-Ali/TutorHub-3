@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   TextInput,
+  KeyboardAvoidingView,
   View,
   StyleSheet,
   ScrollView,
@@ -15,7 +16,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import Icon from 'react-native-vector-icons/Ionicons';
+//import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import OutlineInput from 'react-native-outline-input';
@@ -231,9 +232,9 @@ const Signup = ({navigation}) => {
                 value={email}
                 onChangeText={e => setEmail(e)}
                 label="Email"
-                activeValueColor="#42EADDFF"
+                activeValueColor="black"
                 activeBorderColor="#42EADDFF"
-                activeLabelColor="#42EADDFF"
+                activeLabelColor="teal"
                 passiveBorderColor="#B2BABB"
                 passiveLabelColor="#B2BABB"
                 passiveValueColor="#B2BABB"
@@ -245,9 +246,9 @@ const Signup = ({navigation}) => {
                 value={password}
                 onChangeText={e => setPassword(e)}
                 label="Password"
-                activeValueColor="#42EADDFF"
+                activeValueColor="black"
                 activeBorderColor="#42EADDFF"
-                activeLabelColor="#42EADDFF"
+                activeLabelColor="teal"
                 passiveBorderColor="#B2BABB"
                 passiveLabelColor="#B2BABB"
                 passiveValueColor="#B2BABB"

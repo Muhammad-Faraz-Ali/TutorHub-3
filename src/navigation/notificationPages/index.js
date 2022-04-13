@@ -32,7 +32,7 @@ function index({navigation}) {
         //       size=15
         //   return <Ionicons name={iconName} size={size} color={color} />;
         // },
-        tabBarActiveTintColor: 'maroon',
+        tabBarActiveTintColor: 'blue',
         tabBarInactiveTintColor: 'black',
         headerShown: false,
         tabBarLabelStyle: {elevation: 10, fontSize: 18},

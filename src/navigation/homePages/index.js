@@ -28,8 +28,8 @@ const index = () => {
           else size = 25;
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: 'teal',
-        tabBarInactiveTintColor: '#42EADDFF',
+        tabBarActiveTintColor: 'black',
+        tabBarInactiveTintColor: 'black',
         headerShown: false,
       })}>
       <BottomTab.Screen name="Home" component={HomeScreen}></BottomTab.Screen>
