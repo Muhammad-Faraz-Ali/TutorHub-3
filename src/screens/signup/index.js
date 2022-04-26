@@ -9,6 +9,7 @@ import {
   View,
   StyleSheet,
   Button,
+  Modal,
   Alert,
 } from 'react-native';
 import {

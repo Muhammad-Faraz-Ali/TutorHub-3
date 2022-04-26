@@ -6,6 +6,8 @@ import {
   Text,
   TextInput,
   KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
   View,
   StyleSheet,
   Button,
@@ -29,107 +31,104 @@ const Login = ({navigation}) => {
   });
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}>
       <View style={styles.triangleContainer}></View>
 
       <View style={styles.formContainer}>
-        <KeyboardAvoidingView>
-          <View style={styles.textInput}>
-            <OutlineInput
-              value={email}
-              onChangeText={e => setEmail(e)}
-              label="Email"
-              activeValueColor="black"
-              activeBorderColor="#42EADDFF"
-              activeLabelColor="teal"
-              passiveBorderColor="#B2BABB"
-              passiveLabelColor="#B2BABB"
-              passiveValueColor="#B2BABB"
-              assistiveTextColor="transparent"
+        <View style={styles.textInput}>
+          <OutlineInput
+            value={email}
+            onChangeText={e => setEmail(e)}
+            label="Email"
+            activeValueColor="black"
+            activeBorderColor="#42EADDFF"
+            activeLabelColor="teal"
+            passiveBorderColor="#B2BABB"
+            passiveLabelColor="#B2BABB"
+            passiveValueColor="#B2BABB"
+            assistiveTextColor="transparent"
+          />
+        </View>
+        <View
+          style={[
+            styles.textInput,
+            {
+              marginTop: 10,
+            },
+          ]}>
+          <OutlineInput
+            secureTextEntry={isSecureTextEntry ? true : false}
+            value={password}
+            onChangeText={e => setPassword(e)}
+            label="Password"
+            activeValueColor="black"
+            activeBorderColor="#42EADDFF"
+            activeLabelColor="teal"
+            passiveBorderColor="#B2BABB"
+            passiveLabelColor="#B2BABB"
+            passiveValueColor="#B2BABB"
+            width="80%"
+          />
+          <TouchableOpacity
+            style={{bottom: 40, left: 270}}
+            onPress={() => setIsSecureTextEntry(!isSecureTextEntry)}>
+            <FontAwesome
+              name={isSecureTextEntry ? 'eye-slash' : 'eye'}
+              color="gray"
+              size={25}
+              paddingHorizontal="12%"
             />
-          </View>
-          <View
-            style={[
-              styles.textInput,
-              {
-                marginTop: 10,
-              },
-            ]}>
-            <OutlineInput
-              secureTextEntry={isSecureTextEntry ? true : false}
-              value={password}
-              onChangeText={e => setPassword(e)}
-              label="Password"
-              activeValueColor="black"
-              activeBorderColor="#42EADDFF"
-              activeLabelColor="teal"
-              passiveBorderColor="#B2BABB"
-              passiveLabelColor="#B2BABB"
-              passiveValueColor="#B2BABB"
-              width="80%"
-            />
-            <TouchableOpacity
-              style={{bottom: 40, left: 270}}
-              onPress={() => setIsSecureTextEntry(!isSecureTextEntry)}>
-              <FontAwesome
-                name={isSecureTextEntry ? 'eye-slash' : 'eye'}
-                color="gray"
-                size={25}
-                paddingHorizontal="12%"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{marginLeft: wp('50%'), marginTop: hp('-2%')}}>
-              <Text style={{color: 'red'}}>Forgot password?</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{marginTop: hp('2%')}}>
-            <TouchableOpacity
-              style={[styles.btn, {backgroundColor: state.btnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
-              onPress={() => {
-                setState({btnColor: '#42EADDFF'});
-                setTimeout(() => {
-                  navigation.navigate('Main');
-                  setState({
-                    btnColor: '#D5DBDB',
-                    //googleBtnColor: '#D5DBDB',
-                  });
-                }, 100);
-              }}>
-              <View>
-                <Text style={styles.btnText}>Login</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <Text
-            style={{color: '#42EADDFF', marginHorizontal: 50, marginTop: 10}}>
-            ------------------------------OR------------------------------
-          </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{marginLeft: wp('50%'), marginTop: hp('-2%')}}>
+            <Text style={{color: 'red'}}>Forgot password?</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{marginTop: hp('2%')}}>
+          <TouchableOpacity
+            style={[styles.btn, {backgroundColor: state.btnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+            onPress={() => {
+              setState({btnColor: '#42EADDFF'});
+              setTimeout(() => {
+                navigation.navigate('Main');
+                setState({
+                  btnColor: '#D5DBDB',
+                  //googleBtnColor: '#D5DBDB',
+                });
+              }, 100);
+            }}>
+            <View>
+              <Text style={styles.btnText}>Login</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <Text style={{color: '#42EADDFF', marginHorizontal: 50, marginTop: 10}}>
+          ------------------------------OR------------------------------
+        </Text>
 
-          <View style={[styles.btn, {marginVertical: 20}]}>
-            <FontAwesome.Button
-              name="google"
-              backgroundColor="#58D68D"
-              //#64495ED
-              //#58D68D
-              //#F39C12
-              paddingHorizontal="20%"
-              onPress={() => navigation.navigate('Main')}>
-              <Text style={[styles.btnText, {padding: 2}]}>
-                Login with Google
-              </Text>
-            </FontAwesome.Button>
-          </View>
+        <View style={[styles.btn, {marginVertical: 20}]}>
+          <FontAwesome.Button
+            name="google"
+            backgroundColor="#58D68D"
+            //#64495ED
+            //#58D68D
+            //#F39C12
+            paddingHorizontal="20%"
+            onPress={() => navigation.navigate('Main')}>
+            <Text style={[styles.btnText, {padding: 2}]}>
+              Login with Google
+            </Text>
+          </FontAwesome.Button>
+        </View>
 
-          <View style={styles.signupCont}>
-            <Text style={styles.signupText}>Don't have an account yet?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-              <Text style={styles.btnSignup}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
+        <View style={styles.signupCont}>
+          <Text style={styles.signupText}>Don't have an account yet?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+            <Text style={styles.btnSignup}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 const styles = StyleSheet.create({
