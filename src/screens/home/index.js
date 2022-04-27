@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -22,6 +22,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import UserAvatar from 'react-native-user-avatar';
 import {Card} from 'react-native-shadow-cards';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import * as RNFS from 'react-native-fs';
+const fileHandler = require('fs');
 
 // Import Image Picker
 // import ImagePicker from 'react-native-image-picker';
@@ -33,6 +38,36 @@ const index = ({navigation}) => {
   const [showModal, setShowModal] = useState(false);
   const [logout, setLogout] = useState(false);
   const [name, setName] = useState(false);
+  const setUserToLocalStorage = userId => {
+    // fileHandler.readFile('../res/local_storage', (err, data) => {
+    //   if (err) console.log('Error arise while writing user to local DB', err);
+    //   storage = JSON.parse(data.toString());
+    //   storage.userId = false; //do it false after reading user first time
+    //   fileHandler.writeFile(
+    //     '../../res/local_storage',
+    //     Json.toString(storage),
+    //     () => {
+    //       console.log('User has been written in DB', uid);
+    //     },
+    //   );
+    // });
+    RNFS.readFile('../../res/local_storage.txt')
+      .then(data => {
+        var storage = JSON.parse(data.toString());
+        const id = userId;
+        storage.id = true;
+        RNFS.writeFile('../../res/local_storage', JSON.toString(storage)).then(
+          () => console.log('USER ADDED TO LOCAL DB SUCCESSFULLY'),
+        );
+      })
+      .catch(error =>
+        console.log(
+          'Error comes while setting user data in local_storage:',
+          error,
+        ),
+      );
+  };
+
   const [filePath, setFilePath] = useState({
     assets: [
       {
@@ -142,6 +177,29 @@ const index = ({navigation}) => {
     });
   };
 
+  useEffect(() => {
+    // RNFS.readFile('../../res/local_storage.txt')
+    //   .then(data => {
+    //     id = auth().currentUser.uid;
+    //     storage = JSON.parse(data);
+    //     if (storage.id == true) {
+    //       setAlertText(
+    //         'Welcome to Tutor Hub, we will recommend read our help section before using this app',
+    //       );
+    //       setShowAlert(true);
+    //       setUserToLocalStorage(id); //now this user will be false forever
+    //     }
+    //   })
+    //   .catch(err =>
+    //     console.log('error comes while reading file: ', err.code, err.message),
+    //   );
+    // RNFS.readDir(RNFS.DocumentDirectoryPath).then(files => {
+    //   files.forEach(item => console.log(item));
+    // });
+    RNFS.exists('../../res/local_storage.txt').then(status =>
+      console.log(status),
+    );
+  }, []);
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -154,6 +212,19 @@ const index = ({navigation}) => {
                   //navigation.getParent().navigate('Authentication')
                   setLogout(true)
                 }>
+//put this code in the onPress of ok                  
+//                 onPress={() => {
+//                   const signout = async () => {
+//                     //this code is working perfectly
+//                     console.log('current user: ', auth().currentUser);
+//                     await auth().signOut(); //it will remove current user present in auth, either that user was logged in through Google or Email/Password
+//                     console.log('Current User Status: ', auth().currentUser);
+//                     await GoogleSignin.signOut(); //If we will not signOut from there then next time, it will automatically select already selected user and will not give pop-up
+//                     console.log('Signout from google also now agian login');
+//                   };
+//                   signout();
+//                   navigation.getParent().navigate('Authentication'); //after clicking logout our cached user or auth().currentuser will be null and we will be navigated to first screen
+//                 }}>
                 <AntDesignIcon size={30} color="teal" name="logout" />
               </TouchableOpacity>
             </View>
@@ -346,7 +417,18 @@ const index = ({navigation}) => {
           <Dialog.Container visible={logout}>
             <Dialog.Description>Do you want to logout?</Dialog.Description>
             <Dialog.Button label="Cancel" onPress={() => setLogout(false)} />
-            <Dialog.Button label="Logout" onPress={() => setLogout(false)} />
+            <Dialog.Button label="Logout" onPress={() => {setLogout(false);
+                  const signout = async () => {
+                    //this code is working perfectly
+                    console.log('current user: ', auth().currentUser);
+                    await auth().signOut(); //it will remove current user present in auth, either that user was logged in through Google or Email/Password
+                    console.log('Current User Status: ', auth().currentUser);
+                    await GoogleSignin.signOut(); //If we will not signOut from there then next time, it will automatically select already selected user and will not give pop-up
+                    console.log('Signout from google also now agian login');
+                  };
+                  signout();
+                  navigation.getParent().navigate('Authentication'); //after clicking logout our cached user or auth().currentuser will be null and we will be navigated to first screen
+                                                         }} />
           </Dialog.Container>
         </View>
         <View>
