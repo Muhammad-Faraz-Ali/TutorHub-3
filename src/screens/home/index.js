@@ -33,13 +33,8 @@ const index = ({navigation}) => {
   const [showModal, setShowModal] = useState(false);
   const [logout, setLogout] = useState(false);
   const [name, setName] = useState(false);
-  const [filePath, setFilePath] = useState({
-    assets: [
-      {
-        uri: '../../res/images/no-image.jpeg',
-      },
-    ],
-  });
+  const [image, setImage] = useState(false);
+  const [filePath, setFilePath] = useState('../../res/images/me.png');
 
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -125,7 +120,7 @@ const index = ({navigation}) => {
       // console.log('Response = ', response);
 
       if (response.didCancel) {
-        alert('User cancelled camera picker');
+        //alert('User cancelled camera picker');
         return;
       } else if (response.errorCode == 'camera_unavailable') {
         alert('Camera not available on device');
@@ -212,7 +207,7 @@ const index = ({navigation}) => {
               size={30}
               color="#42EADDFF"
               name="camera"
-              onPress={() => chooseFile('photo')}
+              onPress={() => setImage(true)}
             />
           </View>
 
@@ -355,6 +350,38 @@ const index = ({navigation}) => {
             <Dialog.Input></Dialog.Input>
             <Dialog.Button label="Cancel" onPress={() => setName(false)} />
             <Dialog.Button label="Set" onPress={() => setName(false)} />
+          </Dialog.Container>
+        </View>
+        <View>
+          <Dialog.Container visible={image}>
+            <Dialog.Title>Select a Photo</Dialog.Title>
+            <Dialog.Description>
+              <Dialog.Button
+                label="Take Photo..."
+                onPress={() => {
+                  captureImage('photo');
+                  setImage(!image);
+                }}></Dialog.Button>
+            </Dialog.Description>
+            <Dialog.Description>
+              <Dialog.Button
+                label="Choose from Gallery..."
+                onPress={() => {
+                  chooseFile('photo');
+                  setImage(!image);
+                }}></Dialog.Button>
+            </Dialog.Description>
+            <Dialog.Description>
+              <Dialog.Button
+                label="Remove photo..."
+                color={'red'}
+                bold="false"
+                onPress={() => {
+                  setFilePath('../../res/images/me.png');
+                  setImage(!image);
+                }}></Dialog.Button>
+            </Dialog.Description>
+            <Dialog.Button label="Cancel" onPress={() => setImage(false)} />
           </Dialog.Container>
         </View>
       </ScrollView>
