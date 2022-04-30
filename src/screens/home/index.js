@@ -70,7 +70,6 @@ const index = ({navigation}) => {
       );
   };
 
-  
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
       try {
@@ -207,19 +206,6 @@ const index = ({navigation}) => {
                   //navigation.getParent().navigate('Authentication')
                   setLogout(true)
                 }>
-//put this code in the onPress of ok                  
-//                 onPress={() => {
-//                   const signout = async () => {
-//                     //this code is working perfectly
-//                     console.log('current user: ', auth().currentUser);
-//                     await auth().signOut(); //it will remove current user present in auth, either that user was logged in through Google or Email/Password
-//                     console.log('Current User Status: ', auth().currentUser);
-//                     await GoogleSignin.signOut(); //If we will not signOut from there then next time, it will automatically select already selected user and will not give pop-up
-//                     console.log('Signout from google also now agian login');
-//                   };
-//                   signout();
-//                   navigation.getParent().navigate('Authentication'); //after clicking logout our cached user or auth().currentuser will be null and we will be navigated to first screen
-//                 }}>
                 <AntDesignIcon size={30} color="teal" name="logout" />
               </TouchableOpacity>
             </View>
@@ -412,18 +398,22 @@ const index = ({navigation}) => {
           <Dialog.Container visible={logout}>
             <Dialog.Description>Do you want to logout?</Dialog.Description>
             <Dialog.Button label="Cancel" onPress={() => setLogout(false)} />
-            <Dialog.Button label="Logout" onPress={() => {setLogout(false);
-                  const signout = async () => {
-                    //this code is working perfectly
-                    console.log('current user: ', auth().currentUser);
-                    await auth().signOut(); //it will remove current user present in auth, either that user was logged in through Google or Email/Password
-                    console.log('Current User Status: ', auth().currentUser);
-                    await GoogleSignin.signOut(); //If we will not signOut from there then next time, it will automatically select already selected user and will not give pop-up
-                    console.log('Signout from google also now agian login');
-                  };
-                  signout();
-                  navigation.getParent().navigate('Authentication'); //after clicking logout our cached user or auth().currentuser will be null and we will be navigated to first screen
-                                                         }} />
+            <Dialog.Button
+              label="Logout"
+              onPress={() => {
+                setLogout(false);
+                const signout = async () => {
+                  //this code is working perfectly
+                  console.log('current user: ', auth().currentUser);
+                  await auth().signOut(); //it will remove current user present in auth, either that user was logged in through Google or Email/Password
+                  console.log('Current User Status: ', auth().currentUser);
+                  await GoogleSignin.signOut(); //If we will not signOut from there then next time, it will automatically select already selected user and will not give pop-up
+                  console.log('Signout from google also now agian login');
+                };
+                signout();
+                navigation.getParent().navigate('Authentication'); //after clicking logout our cached user or auth().currentuser will be null and we will be navigated to first screen
+              }}
+            />
           </Dialog.Container>
         </View>
         <View>
