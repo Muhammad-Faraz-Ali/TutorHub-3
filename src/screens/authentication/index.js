@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StatusBar,
   TouchableOpacity,
@@ -14,27 +14,43 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import auth from '@react-native-firebase/auth';
 
 const Main = ({navigation}) => {
-  const [state, setState] = useState({
-    loginBtnColor: '',
-    signupBtnColor: '',
-    guestBtnColor: '',
-  });
+  //all states are defined here
+  // const [state, setState] = useState({
+  //   loginBtnColor: '',
+  //   signupBtnColor: '',
+  //   guestBtnColor: '',
+  // });
+  const [loginBtnColor, setLoginBtnColor] = useState('white');
+  const [signupBtnColor, setSignupBtnColor] = useState('white');
+  const [guestBtnColor, setGuestBtnColor] = useState('white');
 
+  //all hooks are defined here
+  useEffect(() => {
+    if (auth().currentUser) {
+      auth().currentUser.reload(); //in case user verified his email but he closed the app, so we will reload app to check his verification status
+      //this is verified user, its obvious that current cached user had given correct email and password
+      //but there is still a loop whole, first time verified user did'nt loged in, and close app, in this case we will still allow him to navigate to Main page
+      if (auth().currentUser.emailVerified) {
+        navigation.navigate('Main'); //auth().currentUser will be availabe on all pages of this app
+      }
+    }
+    console.log('User Data from UseEffect: ', auth().currentUser);
+  }, []);
+  //all functions are defined here
   return (
     <View style={styles.container}>
       <View style={styles.btnsContainer}>
+        {/* <Text>{loginBtnColor}</Text> */}
         <TouchableOpacity
-          style={[styles.btn, {backgroundColor: state.loginBtnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+          style={[styles.btn, {backgroundColor: loginBtnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
           onPress={() => {
-            setState({loginBtnColor: '#42EADDFF'});
+            setLoginBtnColor('#42EADDFF');
             setTimeout(() => {
               navigation.navigate('Login');
-              setState({
-                //signupBtnColor: '#D5DBDB',
-                //guestBtnColor: '#D5DBDB',
-              });
+              setLoginBtnColor('white');
             }, 100);
           }}>
           <View>
@@ -42,16 +58,12 @@ const Main = ({navigation}) => {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.btn, {backgroundColor: state.signupBtnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+          style={[styles.btn, {backgroundColor: signupBtnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
           onPress={() => {
-            setState({signupBtnColor: '#42EADDFF'});
+            setSignupBtnColor('#42EADDFF');
             setTimeout(() => {
               navigation.navigate('Signup');
-              setState({
-                // loginBtnColor: '#D5DBDB',
-                //signupBtnColor: '#D5DBDB',
-                //guestBtnColor: '#D5DBDB',
-              });
+              setSignupBtnColor('white');
             }, 100);
           }}>
           <View>
@@ -59,16 +71,12 @@ const Main = ({navigation}) => {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.btn, {backgroundColor: state.guestBtnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
+          style={[styles.btn, {backgroundColor: guestBtnColor}]} //Or if don't want "backgroundColor:" and just need change the text color use => "color:""
           onPress={() => {
-            setState({guestBtnColor: '#42EADDFF'});
+            setGuestBtnColor('#42EADDFF');
             setTimeout(() => {
               navigation.navigate('GuestSearch');
-              setState({
-                //loginBtnColor: '#D5DBDB',
-                //signupBtnColor: '#D5DBDB',
-                //guestBtnColor: '#D5DBDB',
-              });
+              setGuestBtnColor('white');
             }, 100);
           }}>
           <View>
